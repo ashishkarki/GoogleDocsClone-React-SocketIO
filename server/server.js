@@ -10,9 +10,15 @@ const io = new Server(3001, {
 io.on('connection', socket => {
   console.log(`connected to client`)
 
-  socket.on('send-changes', delta => {
-    console.log(`delta is ${JSON.stringify(delta)}`)
+  socket.on('get-document', documentId => {
+    const data = ''
+    socket.join(documentId)
+    socket.emit('load-document', data)
 
-    socket.broadcast.emit('receive-changes', delta)
+    socket.on('send-changes', delta => {
+      console.log(`delta is ${JSON.stringify(delta)}`)
+
+      socket.broadcast.to(documentId).emit('receive-changes', delta)
+    })
   })
 })
